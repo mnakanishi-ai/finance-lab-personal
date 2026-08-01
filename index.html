@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f1eee7" />
+    <meta
+      name="description"
+      content="財務・会計を、学習とテストの反復で身につけるための個人用トレーニングサイト。"
+    />
+    <title>FINANCE / LAB — 財務会計トレーニング</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app-v2.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="メインナビゲーション">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">＋</span>
+          <div>
+            <p class="brand-kicker">PERSONAL TRAINING ROOM</p>
+            <p class="brand-name">FINANCE <span>/ LAB</span></p>
+          </div>
+        </div>
+
+        <div class="learner-card">
+          <div class="learner-avatar" aria-hidden="true">M</div>
+          <div>
+            <p class="micro-label">LEARNER</p>
+            <p class="learner-name">中西 誠さん</p>
+            <p class="learner-note">経営に使える数字へ</p>
+          </div>
+        </div>
+
+        <nav class="side-nav" aria-label="学習メニュー">
+          <button class="nav-item is-active" type="button" data-view-target="home">
+            <span class="nav-index">01</span><span>ホーム</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="learn">
+            <span class="nav-index">02</span><span>学習する</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="test">
+            <span class="nav-index">03</span><span>テストする</span>
+          </button>
+          <button class="nav-item" type="button" data-view-target="review">
+            <span class="nav-index">04</span><span>弱点復習</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="streak-block">
+            <span class="streak-dot" aria-hidden="true"></span>
+            <div>
+              <p class="micro-label">CONTINUITY</p>
+              <p><strong id="streak-count">0</strong> 日連続</p>
+            </div>
+          </div>
+          <p class="sidebar-quote">わかるまで読む。<br />答えられるまで解く。</p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="topbar-context">FINANCE / ACCOUNTING · PERSONAL EDITION</p>
+            <p class="topbar-status"><span class="status-led" aria-hidden="true"></span> 端末内に進捗を保存中</p>
+          </div>
+          <button class="text-button" type="button" id="reset-progress">進捗をリセット</button>
+        </header>
+
+        <section class="view is-visible" id="view-home" data-view="home" aria-labelledby="home-title">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <p class="eyebrow">PERSONAL FINANCE OS <span>／ 01</span></p>
+              <h1 id="home-title">知識を、<br /><em>答えられる力</em>に変える。</h1>
+              <p class="hero-lede">
+                財務三表を読める。MGの数字を説明できる。経営判断に使える。<br class="desktop-only" />
+                その状態まで、学習とテストを往復して鍛えます。
+              </p>
+              <div class="hero-actions">
+                <button class="button button-primary" type="button" data-view-target="test">今日のテストを始める <span>→</span></button>
+                <button class="button button-secondary" type="button" data-view-target="learn">学習を続ける</button>
+              </div>
+            </div>
+
+            <div class="hero-note">
+              <p class="micro-label">THE RULE OF THIS ROOM</p>
+              <p class="hero-note-title">「正解した」だけでは、<br />合格にしない。</p>
+              <p>なぜそうなるかを説明できるまで、同じ論点を形を変えて出題します。</p>
+              <div class="hero-note-line"><span></span><small>LEARN → RECALL → TEST → REPAIR</small></div>
+            </div>
+          </div>
+
+          <div class="section-heading section-heading-home">
+            <div>
+              <p class="eyebrow">CURRENT POSITION</p>
+              <h2>いまの定着度</h2>
+            </div>
+            <p class="section-aside">正答率ではなく、<br />「再現できるか」を見ます。</p>
+          </div>
+
+          <div class="overview-grid">
+            <article class="progress-panel panel-dark">
+              <div class="panel-label-row">
+                <p class="micro-label">OVERALL MASTERY</p>
+                <p class="panel-index">01 / 04</p>
+              </div>
+              <div class="mastery-value"><span id="mastery-rate">0</span><small>%</small></div>
+              <div class="progress-track progress-track-dark"><span id="mastery-bar"></span></div>
+              <p class="panel-footnote" id="mastery-copy">まずは1問。正解の理由まで言葉にするところから。</p>
+            </article>
+
+            <article class="next-panel panel-paper">
+              <div class="panel-label-row">
+                <p class="micro-label">NEXT MOVE</p>
+                <span class="number-stamp">02</span>
+              </div>
+              <p class="next-title" id="next-move-title">診断テストを受ける</p>
+              <p class="next-copy" id="next-move-copy">6問で、いま優先して鍛える論点を見つけます。</p>
+              <button class="inline-arrow" type="button" data-view-target="test">テスト画面へ <span>↗</span></button>
+            </article>
+
+            <article class="review-panel panel-red">
+              <div class="panel-label-row">
+                <p class="micro-label">REPAIR QUEUE</p>
+                <span class="queue-count" id="review-count">0</span>
+              </div>
+              <p class="review-title">弱点として<br />残っている問題</p>
+              <button class="inline-arrow inline-arrow-light" type="button" data-view-target="review">復習キューを見る <span>↗</span></button>
+            </article>
+          </div>
+
+          <div class="workflow-strip" aria-label="学習サイクル">
+            <div class="workflow-heading"><p class="eyebrow">THE LOOP</p><p>1周ごとに、<br />解像度が上がる。</p></div>
+            <div class="workflow-step"><span>01</span><strong>学ぶ</strong><small>原理を短く読む</small></div>
+            <div class="workflow-step"><span>02</span><strong>思い出す</strong><small>見ずに説明する</small></div>
+            <div class="workflow-step workflow-step-accent"><span>03</span><strong>テスト</strong><small>答えを出す</small></div>
+            <div class="workflow-step"><span>04</span><strong>修復</strong><small>弱点を再出題</small></div>
+          </div>
+
+          <div class="section-heading section-heading-modules">
+            <div>
+              <p class="eyebrow">CURRICULUM MAP</p>
+              <h2>財務・会計の全体地図</h2>
+            </div>
+            <p class="section-aside">6つの領域を、<br />つながりで理解します。</p>
+          </div>
+
+          <div class="module-grid" id="home-module-grid"></div>
+        </section>
+
+        <section class="view" id="view-learn" data-view="learn" aria-labelledby="learn-title" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">02 ／ LEARN</p>
+              <h1 id="learn-title">学ぶ。<br /><em>数字の関係</em>をほどく。</h1>
+            </div>
+            <p>短い講義を読み、<br />その場で「自分の言葉」に直してからテストへ。</p>
+          </div>
+          <div class="learn-layout">
+            <aside class="module-list" id="learn-module-list" aria-label="学習領域"></aside>
+            <div class="lesson-area" id="lesson-area"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-test" data-view="test" aria-labelledby="test-title" hidden>
+          <div class="view-heading test-heading">
+            <div>
+              <p class="eyebrow">03 ／ TEST</p>
+              <h1 id="test-title">テストする。<br /><em>答えの根拠</em>まで。</h1>
+            </div>
+            <p id="test-status-copy">4択・複数選択・数値入力。<br />出題形式を変えて、理解の穴を見つけます。</p>
+          </div>
+          <div id="test-area"></div>
+        </section>
+
+        <section class="view" id="view-review" data-view="review" aria-labelledby="review-title" hidden>
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">04 ／ REPAIR</p>
+              <h1 id="review-title">弱点復習。<br /><em>忘れる前に</em>戻る。</h1>
+            </div>
+            <p>間違えた問題、迷って正解した問題、<br />まだ一度も解いていない問題を整理します。</p>
+          </div>
+          <div class="review-summary" id="review-summary"></div>
+          <div class="review-list" id="review-list"></div>
+        </section>
+
+        <footer class="site-footer">
+          <p>FINANCE / LAB <span>—</span> PERSONAL KNOWLEDGE INSTALLATION</p>
+          <p>初版収録：財務会計・管理会計の基礎。税務・法令・会社固有の会計方針は専門家と確認してください。</p>
+        </footer>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
