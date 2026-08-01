@@ -254,20 +254,122 @@ const questions = allUnits.flatMap(makeQuestions);
 if (questions.length !== 1000) console.error(`問題数エラー: ${questions.length}`);
 const questionById = Object.fromEntries(questions.map((question) => [question.id, question]));
 
+const lessonGuides = {
+  journal: {
+    aim: "取引を見た瞬間に、何が増減したかを言葉にできるようにする。",
+    core: "簿記は、会社の取引を「資産・負債・純資産・収益・費用」の変化として記録する技術です。仕訳は暗記ではなく、取引の意味を左右に置き換える作業です。",
+    formula: "資産 ＝ 負債 ＋ 純資産 ／ 利益 ＝ 収益 − 費用",
+    example: "現金で商品を100万円仕入れたら、商品（または仕入）が増え、現金が減る。まずこの2つの動きを口にしてから、借方・貸方へ置きます。",
+    caution: "借入・出資・売上を同じ「お金が入った」と扱わない。利益と現金は別のものです。",
+    recall: "この取引で増えたもの・減ったものは何か。利益に影響するか。"
+  },
+  commercial: {
+    aim: "2級の会計処理を、経済実態・認識・測定・表示まで説明できるようにする。",
+    core: "2級では、仕訳の形だけでなく「なぜその時点で、いくらを、どこに表示するのか」を考えます。会計上の利益と税務上の所得、個別と連結など、異なる視点を整理します。",
+    formula: "認識（いつ）→ 測定（いくら）→ 表示（どこに）",
+    example: "グループ会社間の売買は、個別会社では売上・仕入に見えても、連結では内部取引です。グループ外との取引だけが残るように消去します。",
+    caution: "会計方針・保有目的・注記を見ずに、数字や仕訳だけで結論を出さない。",
+    recall: "この処理は、経済実態を何として表しているか。個別と連結で見え方は変わるか。"
+  },
+  industrial: {
+    aim: "原価が材料・人・設備を通って製品と利益へ変わる流れを追えるようにする。",
+    core: "工業簿記は、製造に使った資源を製品へ集計する学習です。材料費・労務費・経費を、直接費と間接費に分け、仕掛品・製品・売上原価へ流します。",
+    formula: "製造原価 ＝ 材料費 ＋ 労務費 ＋ 経費 ／ 限界利益 ＝ 売上 − 変動費",
+    example: "まだ売れていない製品の原価は、すぐ費用にせず、仕掛品や製品としてBSに残ります。販売された時点で売上原価になります。",
+    caution: "稼働率や売上だけで判断しない。限界利益、不良、残業、追加設備まで確認する。",
+    recall: "この原価はどの製品に、どの基準で負担させるか。短期判断か長期判断か。"
+  },
+  statements: {
+    aim: "BS・PL・CFを、同じ会社の1つの物語としてつなげて読めるようにする。",
+    core: "BSは決算日時点の財産、PLは一定期間のもうけ、CFは一定期間の現金の動きです。利益が出ても現金が増えるとは限らないため、3表を行き来します。",
+    formula: "BS＝時点 ／ PL＝期間 ／ CF＝期間",
+    example: "売上を計上してもまだ入金されていなければ、PLの利益は増え、BSの売掛金も増えます。営業CFでは、売掛金の増加が現金を押し下げます。",
+    caution: "利益・現金・純資産を同じものだと思わない。対象期間、決算日、単位も最初に確認する。",
+    recall: "利益はどこに残ったか。現金になったか。BSのどの項目が動いたか。"
+  },
+  reading: {
+    aim: "実際の決算データから、事実・仮説・追加確認を分けて話せるようにする。",
+    core: "財務諸表の読解は、数字の大小を評価するだけではありません。増減の方向、売上との関係、現金化の速度、注記やセグメントをつないで、次に確かめる問いを作ります。",
+    formula: "事実 → 仮説 → 反証 → 追加資料 → 判断",
+    example: "売上が増えているのに売掛金がさらに速く増えていたら、成長による自然な増加か、回収遅延かを分けます。売上計上基準、回収条件、滞留状況を確認します。",
+    caution: "一つの兆候だけで粉飾や失敗と断定しない。同じ数字を説明する別の仮説を置く。",
+    recall: "見えている事実は何か。仮説は何か。反証する資料は何か。"
+  },
+  analysis: {
+    aim: "比率を計算して終わらず、比較と原因の問いへ変えられるようにする。",
+    core: "財務比率は、会社を診断する最終回答ではなく、調べる場所を見つける地図です。前年・同業・計画と比較し、分子と分母の中身、会計方針、季節性を確認します。",
+    formula: "比率 ＝ 分子 ÷ 分母 ／ ROE ＝ 利益率 × 資産回転率 × 財務レバレッジ",
+    example: "ROEが高くても、利益率が高いのか、資産を効率よく使っているのか、自己資本が小さいのかで意味は変わります。デュポン分解で原因を分けます。",
+    caution: "定義の違う比率、決算期や事業構成の違う会社を、そのまま比較しない。",
+    recall: "分子と分母は何か。何と比べたか。変化の原因はどこにあるか。"
+  },
+  capital: {
+    aim: "利益の大きさではなく、投じた資本に対して価値を生んだかを判断できるようにする。",
+    core: "ROEは株主資本、ROICは事業に投じた資本、ROIは投資の採算を見る指標です。EBITDAは現金創出力の近似に使われますが、投資や運転資金を無視する万能利益ではありません。",
+    formula: "ROE ＝ 当期利益 ÷ 自己資本 ／ ROIC ＝ NOPAT ÷ 投下資本 ／ EBITDA ＝ EBIT ＋ 減価償却費",
+    example: "ROICが資本コストWACCを上回れば、投資家が求めるリターンを超えて価値を生む方向です。下回るなら、利益率・回転率・資本の使い方を分解します。",
+    caution: "EBITDAをそのままキャッシュフローや返済可能額とみなさない。税金、投資、運転資金、借入返済を別に見る。",
+    recall: "分子は誰の利益か。分母は何に投じた資本か。資本コストを超えたか。"
+  },
+  mg: {
+    aim: "限界利益と固定費から、売上を増やすだけではない打ち手を選べるようにする。",
+    core: "管理会計では、売上から変動費を引いた限界利益で、固定費をどれだけ回収できるかを見ます。損益分岐点、目標利益、商品ミックスを使って意思決定します。",
+    formula: "限界利益 ＝ 売上 − 変動費 ／ 損益分岐点売上高 ＝ 固定費 ÷ 限界利益率",
+    example: "限界利益率50％、固定費300万円なら、損益分岐点売上高は600万円です。売上を増やすだけでなく、単価・変動費・固定費のどれを動かすかを考えます。",
+    caution: "短期の特別注文と長期の価格政策を同じ基準で判断しない。追加固定費と機会費用も確認する。",
+    recall: "この判断で増える売上・変動費・固定費・限界利益はいくらか。"
+  },
+  inference: {
+    aim: "数字の裏側に複数の仮説を置き、必要な資料を指定できるようにする。",
+    core: "財務の推測は、断定ではなく仮説検証です。異常値を見つけたら、定義・期間・内訳・注記を確認し、反証になる情報も探します。",
+    formula: "異常値 → 仮説を複数置く → 反証を探す → 資料で検証",
+    example: "利益が増えているのに営業CFが弱いなら、売掛金や在庫の増加、前受・仕入債務、非現金項目など、複数の原因を分けて確認します。",
+    caution: "不正・失敗・成功を、1つの比率や印象だけで決めない。わからない範囲を言えることも能力です。",
+    recall: "事実と推測を分けたか。別の説明はあるか。次に何を見れば判定できるか。"
+  },
+  case: {
+    aim: "財務三表・管理会計・資本効率をつないで、判断条件つきの結論を出せるようにする。",
+    core: "統合ケースでは、計算問題の正解だけでなく、事実・仮説・追加確認・打ち手を分けて結論にします。会社の目的や制約を確認してから意思決定します。",
+    formula: "判断 ＝ 事実 ＋ 仮説 ＋ 追加確認 ＋ 条件つきの打ち手",
+    example: "出店や借入を判断するときは、追加売上だけでなく、限界利益、投資額、回収期間、営業CF、既存借入の返済まで一つの表にまとめます。",
+    caution: "売上成長やEBITDAだけを見て、投資・運転資金・返済能力を置き去りにしない。",
+    recall: "いま確実に言える事実は何か。判断を変える条件は何か。"
+  }
+};
+
+const unitLessonOverrides = {
+  "簿記の全体像": "取引を仕訳し、勘定へ集計し、決算整理を行い、財務諸表へつなげる流れを先に覚えます。",
+  "仕訳の基本": "借方・貸方は左右の名前です。増えたもの・減ったものを5要素に分類してから、左右へ置きます。",
+  "BSの構造": "BSは決算日時点のスナップショットです。左側の資産が、どのような負債と純資産で支えられているかを読みます。",
+  "PLの構造": "PLは一定期間の経営成績です。売上から売上原価、販管費などを引いて、どこで利益が残ったかを見ます。",
+  "CFの構造": "CFは現金の増減を営業・投資・財務に分けます。利益が出ているのに現金がない理由を探す入口です。",
+  "ROI": "ROIは投資に対してどれだけ利益を生んだかを測ります。投資額と利益の期間をそろえて比較します。",
+  "ROE": "ROEは株主から預かった自己資本で、どれだけ利益を生んだかを示します。高い理由を利益率・回転率・レバレッジに分解します。",
+  "ROIC": "ROICは事業に投じた資本が、税引後営業利益をどれだけ生んだかを見る指標です。WACCとの比較が重要です。",
+  "EBITDA（正しい表記）": "EBITDAは営業利益に減価償却費を足した近似値です。設備投資や運転資金を引いていないため、現金そのものではありません。"
+};
+
+function lessonContentFor(unit) {
+  const guide = lessonGuides[unit.category];
+  const firstQuestion = questions.find((question) => question.unitId === unit.id);
+  const focus = unitLessonOverrides[unit.title] || `${unit.title}を、${guide.aim}`;
+  return { ...guide, focus, firstQuestion };
+}
+
 let state = loadState();
 let selectedTrackId = "bookkeeping3";
 let selectedUnitId = allUnits[0].id;
 let testSession = null;
 
 function defaultState() {
-  return { questions: {}, attempts: 0, correct: 0, streak: 0, lastStudyDay: null };
+  return { questions: {}, attempts: 0, correct: 0, streak: 0, lastStudyDay: null, lessonNotes: {} };
 }
 
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved || typeof saved !== "object") return defaultState();
-    return { ...defaultState(), ...saved, questions: saved.questions || {} };
+    return { ...defaultState(), ...saved, questions: saved.questions || {}, lessonNotes: saved.lessonNotes || {} };
   } catch (error) {
     return defaultState();
   }
@@ -384,7 +486,12 @@ function renderLearn() {
   lesson.innerHTML = `<article class="lesson-sheet"><p class="lesson-kicker">${track.code} ／ ${track.level}</p><h2>${track.title}</h2><p class="lesson-intro">${track.description} LEVEL ${String(track.units[0].learningLevel).padStart(2, "0")}から順番に進み、1単元を10問で区切って固めます。現在、${stats.mastered}/${stats.total}問が定着候補です。</p><div class="lesson-rule"></div><div class="unit-grid">${track.units.map(unitButtonHtml).join("")}</div><div class="lesson-rule"></div><div id="selected-unit-lesson"></div></article>`;
   lesson.querySelectorAll("[data-unit-id]").forEach((button) => button.addEventListener("click", () => { selectedUnitId = button.dataset.unitId; renderLearn(); }));
   const selectedLesson = lesson.querySelector("#selected-unit-lesson");
-  selectedLesson.innerHTML = `<div class="lesson-columns"><div class="lesson-body"><p class="lesson-kicker">LEVEL ${String(unit.learningLevel).padStart(2, "0")} ／ ${unit.learningLevelTitle} ／ 10 QUESTIONS</p><h3>${unit.title}</h3><p>${unit.summary}</p><div class="lesson-check"><p class="micro-label">PASS CONDITION</p><p>10問の答えを出し、正解の理由と、実務で次に確認する資料まで説明する。前の単元を固めてから、次のレベルへ進む。</p></div></div><aside class="formula-panel"><p class="micro-label">THIS UNIT</p><div class="lesson-formula"><strong>01</strong><span>やさしい定義</span></div><div class="lesson-formula"><strong>02</strong><span>計算・仕訳</span></div><div class="lesson-formula"><strong>03</strong><span>財務諸表を読む</span></div><div class="lesson-formula"><strong>04</strong><span>推測と判断へ</span></div></aside></div><div class="lesson-footer"><button class="button button-primary" type="button" id="start-unit-test">この単元を10問解く <span>→</span></button><button class="button button-secondary" type="button" id="start-track-test">この領域をテストする</button></div>`;
+  const content = lessonContentFor(unit);
+  const guided = content.firstQuestion;
+  selectedLesson.innerHTML = `<div class="lesson-study-grid"><section class="lesson-block lesson-block-primary"><p class="lesson-kicker">LEVEL ${String(unit.learningLevel).padStart(2, "0")} ／ ${unit.learningLevelTitle} ／ STUDY</p><h3>${unit.title}</h3><p class="lesson-goal"><strong>この単元のゴール：</strong>${content.aim}</p><p>${content.focus}</p><p>${content.core}</p></section><aside class="formula-panel"><p class="micro-label">まず覚える軸</p><div class="lesson-formula"><strong>01</strong><span>${content.formula}</span></div><div class="lesson-formula"><strong>02</strong><span>数字の動きを言葉にする</span></div><div class="lesson-formula"><strong>03</strong><span>三表・注記で確かめる</span></div><div class="lesson-formula"><strong>04</strong><span>判断条件まで言う</span></div></aside></div><div class="lesson-rule"></div><section class="worked-example"><div class="worked-example-head"><p class="lesson-kicker">GUIDED EXAMPLE ／ ${formatQuestionType(guided.type)}</p><span>答えを先に見ずに考える</span></div><h4>${guided.prompt}</h4><p class="example-hint">${content.example}</p><details><summary>答えと解説を開く</summary><p><strong>答え：</strong>${formatAnswer(guided)}</p><p>${guided.explanation}</p></details></section><div class="lesson-study-grid lesson-study-grid-secondary"><section class="lesson-block lesson-block-soft"><p class="micro-label">注意すること</p><p>${content.caution}</p></section><section class="lesson-block lesson-recall"><p class="micro-label">自分の言葉で思い出す</p><p>${content.recall}</p><textarea id="lesson-note" rows="4" placeholder="ここに自分の説明を書いてください"></textarea><div class="lesson-note-actions"><button class="button button-secondary" type="button" id="save-lesson-note">学習メモを保存</button><span id="lesson-note-status" aria-live="polite"></span></div></section></div><div class="lesson-check"><p class="micro-label">PASS CONDITION</p><p>①講義を読む → ②例題を説明する → ③自分の言葉でメモする → ④10問を解く。10問を2回連続で理由つき正解にしてから、次の単元へ進みます。</p></div><div class="lesson-footer"><button class="button button-primary" type="button" id="start-unit-test">この単元を10問解く <span>→</span></button><button class="button button-secondary" type="button" id="start-track-test">この領域をテストする</button></div>`;
+  const note = selectedLesson.querySelector("#lesson-note");
+  note.value = state.lessonNotes?.[unit.id] || "";
+  selectedLesson.querySelector("#save-lesson-note").addEventListener("click", () => { state.lessonNotes[unit.id] = note.value.trim(); saveState(); selectedLesson.querySelector("#lesson-note-status").textContent = "保存しました"; markStudyDay(); updateTopIndicators(); });
   selectedLesson.querySelector("#start-unit-test").addEventListener("click", () => startTest({ scope: `unit:${unit.id}`, count: 10, focusWeak: false }));
   selectedLesson.querySelector("#start-track-test").addEventListener("click", () => startTest({ scope: `track:${track.id}`, count: 10, focusWeak: true }));
 }
